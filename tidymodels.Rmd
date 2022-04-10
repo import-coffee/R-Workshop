@@ -1,0 +1,44 @@
+---
+title: "tidymodels"
+author: "Import Coffee"
+date: '2022-04-10'
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+```{r}
+library(tidymodels)
+library(readr)
+library(broom.mixed)
+library(dotwhisker)
+```
+
+```{r}
+urchins <-
+  read_csv("https://tidymodels.org/start/models/urchins.csv") %>% 
+  setNames(c("food_regime", "initial_volume", "width")) %>% 
+  mutate(food_regime = factor(food_regime, levels = c("Initial", "Low", "High")))
+```
+
+```{r}
+lm_mod <- linear_reg()
+
+lm_fit <- 
+  lm_mod %>% 
+  fit(width ~ initial_volume * food_regime, data = urchins)
+```
+
+```{r}
+tidy(lm_fit)
+```
+
+```{r}
+tidy(lm_fit) %>% 
+  dwplot(dot_args = list(size = 2, color = "black"),
+         whisker_args = list(color = "black"),
+         vline = geom_vline(xintercept = 0, colour = "grey50", linetype = 2))
+```
+
